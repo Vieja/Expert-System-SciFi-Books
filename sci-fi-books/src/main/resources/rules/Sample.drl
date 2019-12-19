@@ -1,0 +1,757 @@
+package com.sample
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList
+
+declare Answer
+    question : String
+    answer : String
+end
+
+function Answer askQuestion(String question, ArrayList choices, ArrayList info) {
+	
+	Answer ans = new Answer(question, (String) choices.get(0));
+	
+	class ChoiceListener implements ItemListener {
+		
+		String myText;
+		Answer answer;
+		
+		public ChoiceListener (Answer ans, String text) {
+			this.answer = ans;
+			this.myText = text;
+		}
+		
+		@Override
+        public void itemStateChanged(ItemEvent event) {
+            if (event.getStateChange() == ItemEvent.SELECTED) {
+                answer.setAnswer(myText);
+            }
+        }
+	}
+	
+	final JFrame frame = new JFrame();
+	final JPanel panel = new JPanel(new GridLayout (0,2));	
+	panel.add(new JLabel(question));
+	panel.add(new JLabel(""));  
+	ArrayList<JRadioButton> buttonArrayList = new ArrayList<>();
+    ButtonGroup buttonGroup = new ButtonGroup();
+	for (int i=0; i < choices.size(); i++) {
+        String text = (String) choices.get(i);
+        JRadioButton tempButton= new JRadioButton(text);
+        ChoiceListener listen = new ChoiceListener(ans, text);
+        tempButton.addItemListener(listen);
+        buttonArrayList.add(tempButton);
+    }
+	buttonArrayList.get(0).setSelected(true);
+	for (int i=0;i<buttonArrayList.size();i++){
+        buttonGroup.add(buttonArrayList.get(i));
+        panel.add(buttonArrayList.get(i));
+        panel.add(new JLabel( (String) info.get(i) ));  
+	}
+	
+	JOptionPane.showMessageDialog(frame, panel, "Choose",JOptionPane.PLAIN_MESSAGE);
+	
+	return ans;
+}
+
+function void conclusion(String book, String author) {
+		final JFrame frame = new JFrame();
+        final JPanel panel = new JPanel();
+        panel.add(new JLabel("<html>The best book for you is<br/>"+
+        book+" by "+author+"</html>"));
+        JOptionPane.showMessageDialog(frame, panel);
+}
+
+rule "Sci-fi"
+	when
+	then
+		String question = "Sci-fi";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Yes");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("Fly me to the moon!");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Cyberpunk?"
+	when
+		Answer(question == "Sci-fi" && answer == "Yes")
+	then
+		String question = "Cyberpunk?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Yes");
+		choices.add("Maybe");
+		choices.add("No");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("I love that Billy Idol album");
+		info.add("Can I get the geek without the bleak?");
+		info.add("I get enough \"cyber punks\" on Facebook");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Gritty Noir, Neo-Victorian or Samurai?"
+	when
+		Answer(question == "Cyberpunk?" && answer == "Yes")
+	then
+		String question = "Gritty Noir, Neo-Victorian or Samurai?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Funny Hats, Please");
+		choices.add("Noir");
+		choices.add("Samurai");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("");
+		info.add("");
+		info.add("");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Funny Hats, Please"
+	when
+		Answer(question == "Gritty Noir, Neo-Victorian or Samurai?" && answer == "Funny Hats, Please")
+	then
+		String tytul = "The Diamond Age";
+		String autor = "Neal Stephenson";
+		conclusion(tytul, autor);
+end
+
+rule "Noir"
+	when
+		Answer(question == "Gritty Noir, Neo-Victorian or Samurai?" && answer == "Noir")
+	then
+		String tytul = "Neuromancer";
+		String autor = "William Gibson";
+		conclusion(tytul, autor);
+end
+
+rule "Samurai"
+	when
+		Answer(question == "Gritty Noir, Neo-Victorian or Samurai?" && answer == "Samurai")
+	then
+		String tytul = "Snow Crash";
+		String autor = "Neal Stephenson";
+		conclusion(tytul, autor);
+end
+		
+rule "Cyberpunk - Maybe"
+	when
+		Answer(question == "Cyberpunk?" && answer == "Maybe")
+	then
+		String tytul = "Cryptonomicon";
+		String autor = "Neal Stephenson";
+		conclusion(tytul, autor);
+end
+
+rule "Ready to blast into space?"
+	when
+		Answer(question == "Cyberpunk?" && answer == "No" )
+	then
+		String question = "Ready to blast into space?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Yes");
+		choices.add("Maybe");
+		choices.add("No");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("The stars are my destination");
+		info.add("Let's just stay close. I'm new at this");
+		info.add("I like to keep my feet on the ground");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "War Buff?"
+	when
+		Answer(question == "Ready to blast into space?"  && answer == "Yes" )
+	then
+		String question = "War Buff?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Yes");
+		choices.add("Maybe");
+		choices.add("No");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("I watch the military channel exclusively");
+		info.add("But what I'm really after is exploring the galaxy");
+		info.add("But I'm interestes in first constact");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Who shall we fight?"
+	when
+		Answer(question == "War Buff?"  && answer == "Yes" )
+	then
+		String question = "Who shall we fight?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Man vs. Bugs");
+		choices.add("Man vs. Far Away Bugs");
+		choices.add("Man vs. Alien");
+		choices.add("Spiritual vs. Colonial");
+		choices.add("Human vs. Human");
+		choices.add("Everyone");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("");
+		info.add("");
+		info.add("");
+		info.add("");
+		info.add("");
+		info.add("");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Man vs. Bugs"
+	when
+		Answer(question == "Who shall we fight?" && answer == "Man vs. Bugs")
+	then
+		String tytul = "Starship Troopers";
+		String autor = "Robert A. Heinlein";
+		conclusion(tytul, autor);
+end
+
+rule "Man vs. Far Away Bugs"
+	when
+		Answer(question == "Who shall we fight?" && answer == "Man vs. Far Away Bugs")
+	then
+		String tytul = "Ender's Game";
+		String autor = "Orson Scott Card";
+		conclusion(tytul, autor);
+end
+
+rule "Man vs. Alien"
+	when
+		Answer(question == "Who shall we fight?" && answer == "Man vs. Alien")
+	then
+		String tytul = "The Forever War";
+		String autor = "Joe Haldeman";
+		conclusion(tytul, autor);
+end
+
+rule "Spiritual vs. Colonial"
+	when
+		Answer(question == "Who shall we fight?" && answer == "Spiritual vs. Colonial")
+	then
+		String tytul = "The Dune Chronicles";
+		String autor = "Frank Herbert";
+		conclusion(tytul, autor);
+end
+
+rule "Human vs. Human"
+	when
+		Answer(question == "Who shall we fight?" && answer == "Human vs. Human")
+	then
+		String tytul = "The Moon is a Harsh Mistress";
+		String autor = "Robert A. Heinlein";
+		conclusion(tytul, autor);
+end
+
+rule "Everyone"
+	when
+		Answer(question == "Who shall we fight?" && answer == "Everyone")
+	then
+		String tytul = "Old Man's War";
+		String autor = "John Scalzi";
+		conclusion(tytul, autor);
+end
+
+rule "A galaxy far, far away?"
+	when
+		Answer(question == "War Buff?"  && answer == "Maybe" )
+	then
+		String question = "A galaxy far, far away?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Yes");
+		choices.add("No");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("Preferably long ago, as well");
+		info.add("I see what you did there");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "A galaxy far, far away? - Yes"
+	when
+		Answer(question == "A galaxy far, far away?" && answer == "Yes")
+	then
+		String tytul = "The Thrawn Trilogy";
+		String autor = "Timothy Zahn";
+		conclusion(tytul, autor);
+end
+
+rule "Are you having a laugh?"
+	when
+		Answer(question == "A galaxy far, far away?" && answer == "No")
+	then
+		String question = "Are you having a laugh?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Yes");
+		choices.add("Maybe");
+		choices.add("No");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("Comedy is in my blood");
+		info.add("I don't mind a few chuckles between explosions");
+		info.add("I do not have a sense of humor that I'm aware of");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Are you having a laugh? - Yes"
+	when
+		Answer(question == "Are you having a laugh?" && answer == "Yes")
+	then
+		String tytul = "The Hitchhiker's Guide to the Galaxy";
+		String autor = "Douglas Adams";
+		conclusion(tytul, autor);
+end
+
+rule "Are you having a laugh? - Maybe"
+	when
+		Answer(question == "Are you having a laugh?" && answer == "Maybe")
+	then
+		String tytul = "The Culture Series";
+		String autor = "Ian M. Banks";
+		conclusion(tytul, autor);
+end
+
+rule  "Kind of professorial aren't we?"
+	when
+		Answer(question == "Are you having a laugh?"  && answer == "No" )
+	then
+		String question = "Kind of professorial aren't we?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Yes");
+		choices.add("No");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("I'm a scholarly adventurer");
+		info.add("I just like my action intense");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "What are you studying?"
+	when
+		Answer(question == "Kind of professorial aren't we?" && answer == "Yes" )
+	then
+		String question = "What are you studying?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("History");
+		choices.add("Engineering");
+		choices.add("Information Technology");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("");
+		info.add("");
+		info.add("");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "History"
+	when
+		Answer(question == "What are you studying?" && answer == "History")
+	then
+		String tytul = "Foundation Trilogy";
+		String autor = "Isaac Asimov";
+		conclusion(tytul, autor);
+end
+
+rule "Engineering"
+	when
+		Answer(question == "What are you studying?" && answer == "Engineering")
+	then
+		String tytul = "Ringworld";
+		String autor = "Larry Niven";
+		conclusion(tytul, autor);
+end
+
+rule "Information Technology"
+	when
+		Answer(question == "What are you studying?" && answer == "Information Technology")
+	then
+		String tytul = "A Fire Upon the Deep";
+		String autor = "Vernor Vinge";
+		conclusion(tytul, autor);
+end
+
+rule "Vorkosigan Saga by Lois McMaster Bujold?"
+	when
+		Answer(question == "Kind of professorial aren't we?" && answer == "No" )
+	then
+		String question = "Vorkosigan Saga by Lois McMaster Bujold?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Yes");
+		choices.add("No");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("");
+		info.add("A whole series? I don't have that much time");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Vorkosigan Saga - Yes"
+	when
+		Answer(question == "Vorkosigan Saga by Lois McMaster Bujold?" && answer == "Yes")
+	then
+		String tytul = "Vorkosigan Saga";
+		String autor = "Lois McMaster Bujold";
+		conclusion(tytul, autor);
+end
+
+rule "Short stories it is then. Robots or Martians?"
+	when
+		Answer(question == "Vorkosigan Saga by Lois McMaster Bujold?" && answer == "No" )
+	then
+		String question = "Short stories it is then. Robots or Martians?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Robots");
+		choices.add("Martians");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("");
+		info.add("");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Robots"
+	when
+		Answer(question == "Short stories it is then. Robots or Martians?" && answer == "Robots")
+	then
+		String tytul = "I, Robot";
+		String autor = "Isaac Asimov";
+		conclusion(tytul, autor);
+end
+
+rule "Martians"
+	when
+		Answer(question == "Short stories it is then. Robots or Martians?" && answer == "Martians")
+	then
+		String tytul = "The Ilustrated Man";
+		String autor = "Ray Bradbury";
+		conclusion(tytul, autor);
+end
+
+rule "What kind of aliens would you like?"
+	when
+		Answer(question == "War Buff?"  && answer == "No" )
+	then
+		String question = "What kind of aliens would you like?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Hostile");
+		choices.add("Absent");
+		choices.add("Peaceful");
+		choices.add("Fatherly");
+		choices.add("Prodigious Breeders");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("");
+		info.add("");
+		info.add("");
+		info.add("");
+		info.add("");
+		info.add("");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Hostile"
+	when
+		Answer(question == "What kind of aliens would you like?" && answer == "Hostile")
+	then
+		String tytul = "War of the Worlds";
+		String autor = "H. G. Wells";
+		conclusion(tytul, autor);
+end
+
+rule "Absent"
+	when
+		Answer(question == "What kind of aliens would you like?" && answer == "Absent")
+	then
+		String tytul = "Rendezvous with Rama";
+		String autor = "Arthur C. Clarke";
+		conclusion(tytul, autor);
+end
+
+rule "Peaceful"
+	when
+		Answer(question == "What kind of aliens would you like?" && answer == "Peaceful")
+	then
+		String tytul = "Childhood's End";
+		String autor = "Arthur C. Clarke";
+		conclusion(tytul, autor);
+end
+
+rule "Fatherly"
+	when
+		Answer(question == "What kind of aliens would you like?" && answer == "Fatherly")
+	then
+		String tytul = "Contact";
+		String autor = "Carl Sagan";
+		conclusion(tytul, autor);
+end
+
+rule "Prodigious Breeders"
+	when
+		Answer(question == "What kind of aliens would you like?" && answer == "Prodigious Breeders")
+	then
+		String tytul = "The Mote in God's Eye";
+		String autor = "Larry Niven & Jerry Pournelle";
+		conclusion(tytul, autor);
+end
+
+rule "2001: A Space Odyssey?"
+	when
+		Answer(question == "Ready to blast into space?"  && answer == "Maybe" )
+	then
+		String question = "2001: A Space Odyssey?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Yes");
+		choices.add("No");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("");
+		info.add("Too far. Too trippy. How about Mars?");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "2001: A Space Odyssey? - Yes"
+	when
+		Answer(question == "2001: A Space Odyssey?"  && answer == "Yes" )
+	then
+		String tytul = "2001: A Space Odyssey";
+		String autor = "Atrhur C. Clarke";
+		conclusion(tytul, autor);
+end
+
+rule "What would you like to see from the Red Planet?"
+	when
+		Answer(question == "2001: A Space Odyssey?" && answer == "No" )
+	then
+		String question = "What would you like to see from the Red Planet?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Vignettes");
+		choices.add("Environmentalism");
+		choices.add("Through the looking glass");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("");
+		info.add("");
+		info.add("");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Vignettes"
+	when
+		Answer(question == "What would you like to see from the Red Planet?" && answer == "Vignettes")
+	then
+		String tytul = "The Martian Chronicles";
+		String autor = "Ray Bradbury";
+		conclusion(tytul, autor);
+end
+
+rule "Environmentalism"
+	when
+		Answer(question == "What would you like to see from the Red Planet?" && answer == "Environmentalism")
+	then
+		String tytul = "The Mars Trilogy";
+		String autor = "Kim Stanley Robinson";
+		conclusion(tytul, autor);
+end
+
+rule "Through the looking glass"
+	when
+		Answer(question == "What would you like to see from the Red Planet?" && answer == "Through the looking glass")
+	then
+		String tytul = "Space Trilogy";
+		String autor = "C. S. Lewis";
+		conclusion(tytul, autor);
+end
+
+rule "Don't you mean under the ground?"
+	when
+		Answer(question == "Ready to blast into space?"  && answer == "No" )
+	then
+		String question = "Don't you mean under the ground?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Yes");
+		choices.add("No");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("Give me some subterranean action");
+		info.add("I said on, smart guy");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Wet or Dry?"
+	when
+		Answer(question == "Don't you mean under the ground?" && answer == "Yes")
+	then
+		String question = "Wet or Dry?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Underground");
+		choices.add("Under water");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("");
+		info.add("");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Underground"
+	when
+		Answer(question == "Wet or Dry?" && answer == "Underground")
+	then
+		String tytul = "Journey to the Center of the Earth";
+		String autor = "Jules Verne";
+		conclusion(tytul, autor);
+end
+
+rule "Under water"
+	when
+		Answer(question == "Wet or Dry?" && answer == "Under water")
+	then
+		String tytul = "20,000 Leagues Under the Sea";
+		String autor = "Jules Verne";
+		conclusion(tytul, autor);
+end
+
+rule "Politics, Religion or Philosophy?"
+	when
+		Answer(question == "Don't you mean under the ground?"  && answer == "No" )
+	then
+		String question = "Politics, Religion or Philosophy?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Politics");
+		choices.add("Religion");
+		choices.add("Philosophy");
+		choices.add("No");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("Read my lips...");
+		info.add("Tell me the good word");
+		info.add("I think, therefore I am");
+		info.add("These things aren't polite to talk about in company. Don't you write about time travel?");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "What's your interest?"
+	when
+		Answer(question == "Politics, Religion or Philosophy?" && answer == "Politics")
+	then
+		String question = "What's your interest?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Communism");
+		choices.add("Feminism");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("");
+		info.add("");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Communism"
+	when
+		Answer(question == "What's your interest?" && answer == "Communism")
+	then
+		String tytul = "The Dispossesed";
+		String autor = "Ursula K. LeGuin";
+		conclusion(tytul, autor);
+end
+
+rule "Feminism"
+	when
+		Answer(question == "What's your interest?" && answer == "Feminism")
+	then
+		String tytul = "The Left Hand of Darkness";
+		String autor = "Ursula K. LeGuin";
+		conclusion(tytul, autor);
+end
+
+rule "Pick your poison"
+	when
+		Answer(question == "Politics, Religion or Philosophy?" && answer == "Religion")
+	then
+		String question = "Pick your poison";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Catholicism");
+		choices.add("Humanism");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("");
+		info.add("");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Catholicism"
+	when
+		Answer(question == "Pick your poison" && answer == "Catholicism")
+	then
+		String tytul = "A Canticle for Leibowitz";
+		String autor = "Walter M. Miller Jr.";
+		conclusion(tytul, autor);
+end
+
+rule "Humanism"
+	when
+		Answer(question == "Pick your poison" && answer == "Humanism")
+	then
+		String tytul = "Stranger in a Strange Land";
+		String autor = "Robert A. Heinlein";
+		conclusion(tytul, autor);
+end
+
+rule "Philosophy"
+	when
+		Answer(question == "Politics, Religion or Philosophy?" && answer == "Philosophy")
+	then
+		String tytul = "Do Androids Dream of Electric Sheep?";
+		String autor = "Phillip K. Dick";
+		conclusion(tytul, autor);
+end
+
+rule "Sure do. Modern or classic?"
+	when
+		Answer(question == "Politics, Religion or Philosophy?" && answer == "No")
+	then
+		String question = "Sure do. Modern or classic?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Modern");
+		choices.add("Classic");
+		choices.add("No");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("");
+		info.add("");
+		info.add("I'm a bit out of my comfort zone. Got a nice mystery or a thriller?");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Modern"
+	when
+		Answer(question == "Sure do. Modern or classic?" && answer == "Modern")
+	then
+		String tytul = "Doomsday Book";
+		String autor = "Connie Willis";
+		conclusion(tytul, autor);
+end
+
+rule "Classic"
+	when
+		Answer(question == "Sure do. Modern or classic?" && answer == "Classic")
+	then
+		String tytul = "The Time Machine";
+		String autor = "H. G. Wells";
+		conclusion(tytul, autor);
+end
+
+rule "Thriller or Mystery?"
+	when
+		Answer(question == "Sure do. Modern or classic?" && answer == "No")
+	then
+		String question = "Thriller or Mystery?";
+		ArrayList<String> choices = new ArrayList<>();
+		choices.add("Thriller");
+		choices.add("Mystery");
+		ArrayList<String> info = new ArrayList<>();
+		info.add("");
+		info.add("");
+		insert ( askQuestion(question, choices, info) );
+end
+
+rule "Thriller"
+	when
+		Answer(question == "Thriller or Mystery?" && answer == "Thriller")
+	then
+		String tytul = "Lucifer's Hammer";
+		String autor = "Larry Niven & Jerry Pournelle";
+		conclusion(tytul, autor);
+end
+
+rule "Mystery"
+	when
+		Answer(question == "Thriller or Mystery?" && answer == "Mystery")
+	then
+		String tytul = "The Caves of Steel";
+		String autor = "Isaac Asimov";
+		conclusion(tytul, autor);
+end
